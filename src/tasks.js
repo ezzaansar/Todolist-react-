@@ -35,11 +35,18 @@ router.post("/tasks", async (req, res) => {
 // Delete a task
 router.delete("/tasks/:id", async (req, res) => {
   const { id } = req.params;
+  
+  if (!id) {
+    return res.status(400).json({ error: "Task ID is required." })
+  }
+
   try {
     const [result] = await pool.query("DELETE FROM tasks WHERE id = ?", [id]);
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Task not found" });
     }
+    
     res.json({ message: "Task deleted successfully", deletedId: id });
   } catch (err) {
     console.error("Error deleting task:", err);
