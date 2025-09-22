@@ -1,0 +1,40 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# Build artifacts
+dist/
+build/
+out/
+.next/ # For Next.js projects
+.nuxt/ # For Nuxt.js projects
+public/build/ # If build output goes into public
+
+# Dependency lock files (if not explicitly managed)
+package-lock.json # If you prefer not to commit this
+yarn.lock # If you prefer not to commit this
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and OS files
+.vscode/ # Visual Studio Code settings
+.idea/ # IntelliJ IDEA settings
+*.log
+*.tmp
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+# Test coverage reports
+coverage/
+
+# Documentation generation
+docs/api/ # If generated automatically
+
+# Other common temporary files
+temp/
