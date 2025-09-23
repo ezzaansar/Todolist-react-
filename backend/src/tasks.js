@@ -3,18 +3,47 @@ const pool = require("./db");
 
 // Get all tasks
 router.get("/tasks", async (req, res) => {
+  
+  // req.params => Path Parameters: /tasks/:id
+  // req.query => Query Parameters: /tasks?status=done
+  // req.body => Request Data
+
+  const { status } = req.query ?? {};
+
   try {
-    const [rows] = await pool.query("SELECT * FROM tasks");
-    res.json({ tasks: rows });
+    const sql = status ? `SELECT * FROM tasks where status = "${status}"` : "SELECT * FROM tasks" 
+    const response = await pool.query(sql);
+    res.json({ tasks: response[0] });
   } catch (err) {
     console.error("Error fetching tasks:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+// Get task by id
+router.get("/tasks/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({error: "Id is required."});
+  }
+
+  try {
+    const [rows] = await pool.query("select * from tasks where id = ?", [id]);
+
+    if (rows.length == 0) {
+      return res.status(404).json({error: "Task not found"});
+    }
+
+    return res.json({task: rows[0]});
+  } catch (err) {
+    res.status(500).json({error: "Internal server error"});
+  }
+});
+
 // Add a new task
 router.post("/tasks", async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description } = req.body ?? {};
   if (!title || !description) {
     return res.status(400).json({ error: "title and description are required." });
   }
@@ -32,7 +61,7 @@ router.post("/tasks", async (req, res) => {
   }
 });
 
-// Delete a task
+// Delete task by id
 router.delete("/tasks/:id", async (req, res) => {
   const { id } = req.params;
   
@@ -51,37 +80,6 @@ router.delete("/tasks/:id", async (req, res) => {
   } catch (err) {
     console.error("Error deleting task:", err);
     res.status(500).json({ error: "Failed to delete task." });
-  }
-});
-
-// Get tasks by status
-router.get("/tasks/done", async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM tasks WHERE status = "done"');
-    res.json({ tasks: rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-router.get("/tasks/not-done", async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM tasks WHERE status = "not-done"');
-    res.json({ tasks: rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-router.get("/tasks/in-progress", async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM tasks WHERE status = "in-progress"');
-    res.json({ tasks: rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
