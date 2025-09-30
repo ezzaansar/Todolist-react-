@@ -43,14 +43,14 @@ router.get("/tasks/:id", async (req, res) => {
 
 // Add a new task
 router.post("/tasks", async (req, res) => {
-  const { title, description } = req.body ?? {};
-  if (!title || !description) {
-    return res.status(400).json({ error: "title and description are required." });
+  const { description } = req.body ?? {};
+  if (!description) {
+    return res.status(400).json({ error: "Description is required." });
   }
 
   try {
-    const sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
-    const [result] = await pool.query(sql, [title, description]);
+    const sql = "INSERT INTO tasks (description) VALUES (?)";
+    const [result] = await pool.query(sql, [description]);
     res.status(201).json({ 
       message: "Task created successfully", 
       taskId: result.insertId 
